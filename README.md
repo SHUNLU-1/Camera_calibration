@@ -211,4 +211,4 @@ $(\hat{u},\hat{v})$ 可以通过识别标定板的角点获得， $(u,v)$ 可以
 利用 $\hat{u},u,\hat{v},v$ 构造 $D$ 矩阵，计算径向畸变参数；
 (5)、利用L-M（Levenberg-Marquardt）算法对上述参数进行优化。
 
-**这是相机标定的代码[Camera_calibration](https://www.runoob.com)**
+**这是相机标定的代码[Camera_calibration](https://github.com/SHUNLU-1/Camera_calibration.git)**
