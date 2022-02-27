@@ -36,11 +36,11 @@ def calibrate():
 if __name__ == "__main__":
 
     '''r+字符串 表示后面都是普通字符串 没有转义字符'''
-    file_dir = r"/home/amber/code/opencv/Camera_calibration/pic/"
+    file_dir = r"/home/amber/code/opencv/Camera_calibration/image/"
     pic_name = os.listdir(file_dir)
  
     '''由于棋盘为二维平面,设定世界坐标系在棋盘上,一个单位代表一个棋盘宽度,产生世界坐标系三维坐标'''
-    cross_corners = [7, 4] 
+    cross_corners = [11, 8] 
     real_coor = np.zeros((cross_corners[0] * cross_corners[1], 3), np.float32)
 
     '''
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     第1返回值为第1维数据在最终结构中的分布,
     第2返回值为第2维数据在最终结构中的分布,以此类推。(分布以矩阵形式呈现) 
     '''
-    real_coor[:, :2] = np.mgrid[0:7, 0:4].T.reshape(-1, 2)
+    real_coor[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
     
     real_points = []
     real_points_x_y = []
