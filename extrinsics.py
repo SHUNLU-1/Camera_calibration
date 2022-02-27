@@ -4,16 +4,16 @@
  
 import numpy as np
  
-#返回每一幅图的外参矩阵[R|t]
+"""返回每一幅图的外参矩阵[R|t]"""
 def get_extrinsics_param(H, intrinsics_param):
     extrinsics_param = []
- 
+    """计算矩阵的(乘法)逆。"""
     inv_intrinsics_param = np.linalg.inv(intrinsics_param)
     for i in range(len(H)):
         h0 = (H[i].reshape(3, 3))[:, 0]
         h1 = (H[i].reshape(3, 3))[:, 1]
         h2 = (H[i].reshape(3, 3))[:, 2]
- 
+        """矩阵或向量范数"""
         scale_factor = 1 / np.linalg.norm(np.dot(inv_intrinsics_param, h0))
  
         r0 = scale_factor * np.dot(inv_intrinsics_param, h0)

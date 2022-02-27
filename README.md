@@ -27,10 +27,13 @@
 - 另外，相机拍摄的图片还存在一定的畸变，畸变包括**桶形畸变和枕形畸变**，畸变模型包括**径向畸变和切向畸变**。
   ![](https://img-blog.csdnimg.cn/20190412190959963.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwMzY5OTI2,size_16,color_FFFFFF,t_70)
   ![](https://img-blog.csdnimg.cn/20190412190949639.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwMzY5OTI2,size_16,color_FFFFFF,t_70)
+  
   **径向畸变公式（3 阶）如下：**
   ![](https://www.zhihu.com/equation?tex=%5Chat%7Bx%7D+%3D+x%281%2Bk_1r%5E2%2Bk_2r%5E4%2Bk_3r%5E6%29+%5C%5C+%5Chat%7By%7D+%3D+y%281%2Bk_1r%5E2%2Bk_2r%5E4%2Bk_3r%5E6%29)
+  
   **切向畸变公式如下：**
   ![](https://www.zhihu.com/equation?tex=%5Chat%7Bx%7D+%3D+x%2B%282p_1y%2Bp_2%28r%5E2%2B2x%5E2%29%29+%5C%5C+%5Chat%7By%7D+%3D+y%2B%28p_1%28r%5E2%2B2y%5E2%29%2B2p_2x%29+)
+
 - 其中，$(x,y)$,$(\hat{x},\hat{y})$分别为**理想的无畸变的归一化的图像坐标、畸变后的归一化图像坐标**， $r^2=x^2+y^2$为**图像像素点到图像中心点的距离**。
 
 ## 二、张正友相机标定原理
@@ -78,7 +81,7 @@
 
 此时，尺度因子 $Z$ 已经被消去，因此上式**对于同一张图片上所有的角点均成立**。$(u,v)$ 是像素坐标系下的标定板角点的坐标， $(U,V)$ 是世界坐标系下的标定板角点的坐标。通过图像识别算法，我们可以得到标定板角点的像素坐标 $(u,v)$，又由于标定板的世界坐标系是人为定义好的，标定板上每一个格子的大小是已知的，我们可以计算得到世界坐标系下的 $(U,V)$。
 
-由这里的 $H$ 是齐次矩阵，有 8 个独立未知元素。每一个标定板角点可以提供两个约束方程（ $u,U,V$ 的对应关系、 $u,U,V$ 的对应关系提供了两个约束方程），因此，当一张图片上的标定板角点数量等于 4 时，即可求得该图片对应的矩阵 $H$ 。当一张图片上的标定板角点数量大于 4 时，利用最小二乘法回归最佳的矩阵 $H$。
+由这里的 $H$ 是齐次矩阵，有 8 个独立未知元素。每一个标定板角点可以提供两个约束方程 $(u,U,V)$ 的对应关系、 $(u,U,V)$ 的对应关系提供了两个约束方程，因此，当一张图片上的标定板角点数量等于 4 时，即可求得该图片对应的矩阵 $H$ 。当一张图片上的标定板角点数量大于 4 时，利用最小二乘法回归最佳的矩阵 $H$。
 
 #### (2)、求解内参矩阵
 

@@ -1,4 +1,3 @@
-
 #!usr/bin/env/ python
 # _*_ coding:utf-8 _*_
  
@@ -6,36 +5,40 @@ import numpy as np
 from scipy import optimize as opt
  
  
-#求输入数据的归一化矩阵
+"""求输入数据的归一化矩阵(满足2的正态分布)"""
 def normalizing_input_data(coor_data):
+    """x坐标的mean"""
     x_avg = np.mean(coor_data[:, 0])
+    """y坐标的mean"""
     y_avg = np.mean(coor_data[:, 1])
+
+    """x,y的标准差"""
     sx = np.sqrt(2) / np.std(coor_data[:, 0])
     sy = np.sqrt(2) / np.std(coor_data[:, 1])
- 
+    """构建归一化矩阵,满足其分布"""
     norm_matrix = np.matrix([[sx, 0, -sx * x_avg],
                              [0, sy, -sy * y_avg],
                              [0, 0, 1]])
     return norm_matrix
  
  
-#求取初始估计的单应矩阵
+"""求取初始估计的单应矩阵"""
 def get_initial_H(pic_coor, real_coor):
-    # 获得归一化矩阵
+    """获得归一化矩阵"""
     pic_norm_mat = normalizing_input_data(pic_coor)
     real_norm_mat = normalizing_input_data(real_coor)
  
     M = []
     for i in range(len(pic_coor)):
-        #转换为齐次坐标
+        """转换为齐次坐标"""
         single_pic_coor = np.array([pic_coor[i][0], pic_coor[i][1], 1])
         single_real_coor = np.array([real_coor[i][0], real_coor[i][1], 1])
  
-        #坐标归一化
+        """坐标归一化 np.dot点积运算"""
         pic_norm = np.dot(pic_norm_mat, single_pic_coor)
         real_norm = np.dot(real_norm_mat, single_real_coor)
  
-        #构造M矩阵
+        """构造M矩阵"""
         M.append(np.array([-real_norm.item(0), -real_norm.item(1), -1,
                       0, 0, 0,
                       pic_norm.item(0) * real_norm.item(0), pic_norm.item(0) * real_norm.item(1), pic_norm.item(0)]))
@@ -44,9 +47,9 @@ def get_initial_H(pic_coor, real_coor):
                       -real_norm.item(0), -real_norm.item(1), -1,
                       pic_norm.item(1) * real_norm.item(0), pic_norm.item(1) * real_norm.item(1), pic_norm.item(1)]))
  
-    #利用SVD求解M * h = 0中h的解
+    """利用SVD求解M * h = 0中h的解"""
     U, S, VT = np.linalg.svd((np.array(M, dtype='float')).reshape((-1, 9)))
-    # 最小的奇异值对应的奇异向量,S求出来按大小排列的，最后的最小
+    """最小的奇异值对应的奇异向量,S求出来按大小排列的,最后的最小"""
     H = VT[-1].reshape((3, 3))
     H = np.dot(np.dot(np.linalg.inv(pic_norm_mat), H), real_norm_mat)
     H /= H[-1, -1]
@@ -54,7 +57,7 @@ def get_initial_H(pic_coor, real_coor):
     return H
  
  
-#返回估计坐标与真实坐标偏差
+"""返回估计坐标与真实坐标偏差"""
 def value(H, pic_coor, real_coor):
     Y = np.array([])
     for i in range(len(real_coor)):
@@ -68,7 +71,7 @@ def value(H, pic_coor, real_coor):
     return Y_NEW
  
  
-#返回对应jacobian矩阵
+"""返回对应jacobian矩阵"""
 def jacobian(H, pic_coor, real_coor):
     J = []
     for i in range(len(real_coor)):
@@ -88,7 +91,7 @@ def jacobian(H, pic_coor, real_coor):
     return np.array(J)
  
  
-#利用Levenberg Marquart算法微调H
+"""利用Levenberg Marquart算法微调H"""
 def refine_H(pic_coor, real_coor, initial_H):
     initial_H = np.array(initial_H)
     final_H = opt.leastsq(value,
@@ -100,7 +103,7 @@ def refine_H(pic_coor, real_coor, initial_H):
     return final_H
  
  
-#返回微调后的H
+"""返回微调后的H矩阵"""
 def get_homography(pic_coor, real_coor):
     refined_homographies =[]
  
