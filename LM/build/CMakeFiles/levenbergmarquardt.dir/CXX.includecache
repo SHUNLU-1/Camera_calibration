@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/amber/code/opencv/Camera_calibration/LM/main.cpp
+iostream
+-
+eigen3/Eigen/Core
+-
+eigen3/Eigen/Dense
+-
+opencv4/opencv2/opencv.hpp
+-
+eigen3/Eigen/Cholesky
+-
+chrono
+-
+
