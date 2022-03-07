@@ -257,8 +257,11 @@ $(\hat{u},\hat{v})$ 可以通过识别标定板的角点获得， $(u,v)$ 可以
 
 要求解这个问题，根据推导部分可知，需要求解雅克比。
 ![](https://www.zhihu.com/equation?tex=J%28X%29%3D%5Cleft%5B%5Cbegin%7Bmatrix%7D+-x_1%5E2exp%28ax_1%5E2%2Bbx_1%2Bc%29+%26+-x_1exp%28ax_1%5E2%2Bbx_1%2Bc%29+%26-exp%28ax_1%5E2%2Bbx_1%2Bc%29+%5C%5C+%5Cdots+%26+%5Cdots+%26+%5Cdots+%5C%5C+-x_N%5E2exp%28ax_N%5E2%2Bbx_N%2Bc%29+%26+-x_Nexp%28ax_N%5E2%2Bbx_N%2Bc%29+%26-exp%28ax_N%5E2%2Bbx_N%2Bc%29+%5Cend%7Bmatrix%7D+%5Cright%5D)
+
 [可以参考](https://wym.netlify.app/2019-07-01-nonlinear-optimization/)
-[代码实现]()
+
+[代码实现](https://github.com/SHUNLU-1/Camera_calibration/tree/main/LM)
+
 ```c++
 #include <iostream>
 #include <eigen3/Eigen/Core>
