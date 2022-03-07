@@ -43,7 +43,7 @@ def calib(inter_corner_shape, size_per_grid, img_dir,img_type):
             """view the corners"""
             cv2.drawChessboardCorners(img, (w,h), cp_img, ret)
             cv2.imshow('FoundCorners',img)
-            cv2.waitKey(1)
+            cv2.waitKey(1000)
     cv2.destroyAllWindows()
     """calibrate the camera"""
     ret, mat_inter, coff_dis, v_rot, v_trans = cv2.calibrateCamera(obj_points, img_points, gray_img.shape[::-1], None, None)

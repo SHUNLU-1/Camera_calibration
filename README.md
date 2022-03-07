@@ -214,7 +214,274 @@ $(\hat{u},\hat{v})$ 可以通过识别标定板的角点获得， $(u,v)$ 可以
 #### (5)、L-M 算法参数优化
 
 从上述推导过程就可以看出，张正友标定法是有很多近似的，所以仅仅利用上述的过程进行标定误差肯定是很大的。所以张正友标定法还利用 L-M（Levenberg-Marquardt）算法对参数进行了优化。
+##### 5.1、最小二乘法
+![](https://www.zhihu.com/equation?tex=x%3Darg%5Cmin_%7Bx%7D+%7BF%28x%29%7D%3Darg%5Cmin_%7Bx%7D+%5Cfrac%7B1%7D%7B2%7D+%5Csum_%7Bi%3D1%7D%5EN%5Cparallel+f%28x%29+%5Cparallel+%5E2+%5C%5C+F%28x%29%3D%5Cfrac%7B1%7D%7B2%7D+%5Csum_%7Bi%3D1%7D%5EN%5Cparallel+f%28x%29+%5Cparallel+%5E2%3D%5Cfrac%7B1%7D%7B2%7D%5Cparallel%5Cmathbf%7Bf%7D%28x%29%5Cparallel%5E2%3D%5Cfrac%7B1%7D%7B2%7D%5Cmathbf%7Bf%7D%28x%29%5ET%5Cmathbf%7Bf%7D%28x%29)
+将 $f$ 一阶泰勒展开：
+![](https://www.zhihu.com/equation?tex=%5Cmathbf%7Bf%7D%28x%2Bh%29%3D%5Cmathbf%7Bf%7D%28x%29%2B%5Cmathbf%7BJ%7D%28x%29+h+%2B+O%28h%5ETh%29+%5C%5C+)
 
+去掉高阶项，带入到 $F$ :
+![](https://www.zhihu.com/equation?tex=F%28x%2Bh%29%5Capprox+L%28h%29%3D%5Cfrac%7B1%7D%7B2%7D%5Cmathbf%7Bf%7D%5ET%5Cmathbf%7Bf%7D%2Bh%5ET%5Cmathbf%7BJ%7D%5Cmathbf%7Bf%7D%2B%5Cfrac%7B1%7D%7B2%7Dh%5ET%5Cmathbf%7BJ%7D%5ET%5Cmathbf%7BJ%7Dh+%5C%5C)
+
+阻尼法的的思想是再加入一个阻尼项![](https://www.zhihu.com/equation?tex=+%5Cfrac%7B1%7D%7B2%7D%5Cmu+h%5ETh)：
+![](https://www.zhihu.com/equation?tex=h%3Darg%5Cmin_h+%7B%5Cmathbf%7BG%7D%28h%29%7D+%3D+arg%5Cmin_h+%5Cfrac%7B1%7D%7B2%7D%5Cmathbf%7Bf%7D%5ET%5Cmathbf%7Bf%7D%2Bh%5ET%5Cmathbf%7BJ%7D%5ET%5Cmathbf%7Bf%7D%2B%5Cfrac%7B1%7D%7B2%7Dh%5ET%5Cmathbf%7BJ%7D%5ET%5Cmathbf%7BJ%7Dh+%2B+%5Cfrac%7B1%7D%7B2%7D%5Cmu+h%5ETh%5C%5C)
+
+对上式求偏导数，并令为０．
+![](https://www.zhihu.com/equation?tex=%5Cmathbf%7BJ%7D%5ETf%2B%5Cmathbf%7BJ%7D%5ET%5Cmathbf%7BJ%7Dh%2B%5Cmu+h%3D+0+%5C%5C+%28%5Cmathbf%7BJ%7D%5ET%5Cmathbf%7BJ%7D%2B%5Cmu+%5Cmathbf%7BI%7D%29h%3D-%5Cmathbf%7BJ%7D%5ETf%5C%5C+%28%5Cmathbf%7BH%7D%2B%5Cmu+%5Cmathbf%7BI%7D+%29h%3D-g)
+
+
+阻尼参数 $\mu$ 的作用有：
+
+1. 对与 $\mu>0$，$(H+\mu I)$ 正定，保证了 $h$ 是梯度下降的方向。
+2. 当 $\mu$ 较大时:![](https://www.zhihu.com/equation?tex=h%5Capprox-%5Cfrac%7B1%7D%7B%5Cmu%7Dg%3D-%5Cfrac%7B1%7D%7B%5Cmu%7DF%27%28x%29)，其实就是梯度、最速下降法，当离最终结果较远的时候，很好。
+3. 当 $\mu$ 较小时，方法接近与高斯牛顿，当离最终结果很近时，可以获得二次收敛速度，很好。
+看来，$\mu$ 的选取很重要。初始时，取
+![](https://www.zhihu.com/equation?tex=%5Cmathbf%7BA%7D_0%3D%5Cmathbf%7BJ%7D%28x_0%29%5ET%5Cmathbf%7BJ%7D%28x_0%29%5C%5C+%5Cmu_0%3D%5Ctau+%5Ccdot+%5Cmax_i%5C%7Ba_%7Bii%7D%5E0%5C%7D)
+
+其他情况，利用cost增益来确定:![](https://www.zhihu.com/equation?tex=%5Cvarrho%3D%5Cfrac%7BF%28x%29-f%28x%2Bh%29%7D%7B+L%280%29-L%28h%29%7D+%5C%5C)
+
+**迭代终止条件**
+> １．一阶导数为０： ![](https://www.zhihu.com/equation?tex=F%27%28x%29%3Dg%28x%29%3D0)，使用![](https://www.zhihu.com/equation?tex=%5Cparallel+g%28x%29+%5Cparallel+%3C+%5Cvarepsilon_1), $\varepsilon_1$ 是设定的终止条件；
+> ２．$ｘ$变化步距离足够小，![](https://www.zhihu.com/equation?tex=%5Cparallel+h%5Cparallel%3D%5Cparallel+x_%7Bnew%7D-x+%5Cparallel+%3C+%5Cvarepsilon_2%28+%5Cparallel+x+%5Cparallel+%2B+%5Cvarepsilon_2+%29)；
+> ３．超过最大迭代次数。
+
+##### 5.2、LM算法的步骤
+![2022-03-07_18-09.png](https://s2.loli.net/2022/03/07/GsVFUkxSmCunOB1.png)
+
+##### 5.3、算法实现
+
+问题：（高斯牛顿同款问题）非线性方程: ![](https://www.zhihu.com/equation?tex=y%3Dexp%28ax%5E2%2Bbx%2Bc%29) ，给定 $N$ 组观测数据 ${x_i,y_i}$ ，求系数 $X=[a,b,c]^T$ .
+分析：![](https://www.zhihu.com/equation?tex=f%28X%29%3Dy-exp%28ax%5E2%2Bbx%2Bc%29),$N$ 组数据可以组成一个大的非线性方程组
+![](https://www.zhihu.com/equation?tex=F%28X%29%3D%5Cleft%5B%5Cbegin%7Barray%7D%5Bc%5D%7Bc%7D+y_1-exp%28ax_1%5E2%2Bbx_1%2Bc%29%5C%5C+%5Cdots%5C%5C+y_N-exp%28ax_N%5E2%2Bbx_N%2Bc%29%5Cend%7Barray%7D+%5Cright%5D)
+
+我们可以构建一个最小二乘问题：![](https://www.zhihu.com/equation?tex=x+%3D+%5Cmathrm%7Barg%7D%5Cmin_%7Bx%7D%5Cfrac%7B1%7D%7B2%7D%5Cparallel+F%28X%29+%5Cparallel%5E2)
+
+要求解这个问题，根据推导部分可知，需要求解雅克比。
+![](https://www.zhihu.com/equation?tex=J%28X%29%3D%5Cleft%5B%5Cbegin%7Bmatrix%7D+-x_1%5E2exp%28ax_1%5E2%2Bbx_1%2Bc%29+%26+-x_1exp%28ax_1%5E2%2Bbx_1%2Bc%29+%26-exp%28ax_1%5E2%2Bbx_1%2Bc%29+%5C%5C+%5Cdots+%26+%5Cdots+%26+%5Cdots+%5C%5C+-x_N%5E2exp%28ax_N%5E2%2Bbx_N%2Bc%29+%26+-x_Nexp%28ax_N%5E2%2Bbx_N%2Bc%29+%26-exp%28ax_N%5E2%2Bbx_N%2Bc%29+%5Cend%7Bmatrix%7D+%5Cright%5D)
+
+```c++
+#include <iostream>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
+#include <opencv2/opencv.hpp>
+#include <eigen3/Eigen/Cholesky>
+#include <chrono>
+
+/* 计时类 */
+class Runtimer{
+public:
+    inline void start()
+    {
+        t_s_  = std::chrono::steady_clock::now();
+    }
+    
+    inline void stop()
+    {
+        t_e_ = std::chrono::steady_clock::now();
+    }
+    
+    inline double duration()
+    {
+        return std::chrono::duration_cast<std::chrono::duration<double>>(t_e_ - t_s_).count() * 1000.0;
+    }
+    
+private:
+    std::chrono::steady_clock::time_point t_s_; //start time ponit
+    std::chrono::steady_clock::time_point t_e_; //stop time point
+};
+
+/*  优化方程 */
+class LevenbergMarquardt{
+public:
+    LevenbergMarquardt(double* a, double* b, double* c):
+    a_(a), b_(b), c_(c)
+    {
+        epsilon_1_ = 1e-6;
+        epsilon_2_ = 1e-6;
+        max_iter_ = 50;
+        is_out_ = true;
+    }
+    
+    void setParameters(double epsilon_1, double epsilon_2, int max_iter, bool is_out)
+    {
+        epsilon_1_ = epsilon_1;
+        epsilon_2_ = epsilon_2;
+        max_iter_ = max_iter;
+        is_out_ = is_out;
+    }
+    
+    void addObservation(const double& x, const double& y)
+    {
+        obs_.push_back(Eigen::Vector2d(x, y));
+    }
+    
+    void calcJ_fx()
+    {
+        J_ .resize(obs_.size(), 3);
+        fx_.resize(obs_.size(), 1);
+        
+        for ( size_t i = 0; i < obs_.size(); i ++)
+        {
+            const Eigen::Vector2d& ob = obs_.at(i);
+            const double& x = ob(0);
+            const double& y = ob(1);
+            double j1 = -x*x*exp(*a_ * x*x + *b_*x + *c_);
+            double j2 = -x*exp(*a_ * x*x + *b_*x + *c_);
+            double j3 = -exp(*a_ * x*x + *b_*x + *c_);
+            J_(i, 0 ) = j1;
+            J_(i, 1) = j2;
+            J_(i, 2) = j3;
+            fx_(i, 0) = y - exp( *a_ *x*x + *b_*x +*c_);
+        }
+    }
+    
+    void calcH_g()
+    {
+        H_ = J_.transpose() * J_;
+        g_ = -J_.transpose() * fx_;
+    }
+        
+    double getCost()
+    {
+        Eigen::MatrixXd cost= fx_.transpose() * fx_;
+        return cost(0,0);
+    }
+    
+    double F(double a, double b, double c)
+    {
+        Eigen::MatrixXd fx;
+        fx.resize(obs_.size(), 1);
+        
+        for ( size_t i = 0; i < obs_.size(); i ++)
+        {
+            const Eigen::Vector2d& ob = obs_.at(i);
+            const double& x = ob(0);
+            const double& y = ob(1);
+            fx(i, 0) = y - exp( a *x*x + b*x +c);
+        }
+        Eigen::MatrixXd F = 0.5 * fx.transpose() * fx;
+        return F(0,0);
+    }
+    
+    double L0_L( Eigen::Vector3d& h)
+    {
+           Eigen::MatrixXd L = -h.transpose() * J_.transpose() * fx_ - 0.5 * h.transpose() * J_.transpose() * J_ * h;
+           return L(0,0);
+    }
+
+    void solve()
+    {
+        int k = 0;
+        double nu = 2.0;
+        calcJ_fx();
+        calcH_g();
+        bool found = ( g_.lpNorm<Eigen::Infinity>() < epsilon_1_ );
+        
+        std::vector<double> A;
+        A.push_back( H_(0, 0) );
+        A.push_back( H_(1, 1) );
+        A.push_back( H_(2,2) );
+        auto max_p = std::max_element(A.begin(), A.end());
+        double mu = *max_p;
+        
+        double sumt =0;
+
+        while ( !found && k < max_iter_)
+        {
+            Runtimer t;
+            t.start();
+            
+            k = k +1;
+            Eigen::Matrix3d G = H_ + mu * Eigen::Matrix3d::Identity();
+            Eigen::Vector3d h = G.ldlt().solve(g_);
+            
+            if( h.norm() <= epsilon_2_ * ( sqrt(*a_**a_ + *b_**b_ + *c_**c_ ) +epsilon_2_ ) )
+                found = true;
+            else
+            {
+                double na = *a_ + h(0);
+                double nb = *b_ + h(1);
+                double nc = *c_ + h(2);
+                
+                double rho =( F(*a_, *b_, *c_) - F(na, nb, nc) )  / L0_L(h);
+
+                if( rho > 0)
+                {
+                    *a_ = na;
+                    *b_ = nb;
+                    *c_ = nc;
+                    calcJ_fx();
+                    calcH_g();
+                                      
+                    found = ( g_.lpNorm<Eigen::Infinity>() < epsilon_1_ );
+                    mu = mu * std::max<double>(0.33, 1 - std::pow(2*rho -1, 3));
+                    nu = 2.0;
+                }
+                else
+                {
+                    mu = mu * nu; 
+                    nu = 2*nu;
+                }// if rho > 0
+            }// if step is too small
+            
+            t.stop();
+            if( is_out_ )
+            {
+                std::cout << "Iter: " << std::left <<std::setw(3) << k << " Result: "<< std::left <<std::setw(10)  << *a_ << " " << std::left <<std::setw(10)  << *b_ << " " << std::left <<std::setw(10) << *c_ << 
+                " step: " << std::left <<std::setw(14) << h.norm() << " cost: "<< std::left <<std::setw(14)  << getCost() << " time: " << std::left <<std::setw(14) << t.duration()  <<
+                " total_time: "<< std::left <<std::setw(14) << (sumt += t.duration()) << std::endl;
+            }   
+        } // while
+        
+        if( found  == true)
+            std::cout << "\nConverged\n\n";
+        else
+            std::cout << "\nDiverged\n\n";
+        
+    }//function 
+    
+    
+    
+    Eigen::MatrixXd fx_; 
+    Eigen::MatrixXd J_; // 雅克比矩阵
+    Eigen::Matrix3d H_; // H矩阵
+    Eigen::Vector3d g_;
+    
+    std::vector< Eigen::Vector2d> obs_; // 观测
+   
+   /* 要求的三个参数 */
+   double* a_, *b_, *c_;
+    
+    /* parameters */
+    double epsilon_1_, epsilon_2_;
+    int max_iter_;
+    bool is_out_;
+};//class LevenbergMarquardt
+int main(int argc, char **argv) {
+    const double aa = 0.1, bb = 0.5, cc = 2; // 实际方程的参数
+    double a =0.0, b=0.0, c=0.0; // 初值
+    
+    /* 构造问题 */
+    LevenbergMarquardt lm(&a, &b, &c);
+    lm.setParameters(1e-10, 1e-10, 100, true);
+    
+    /* 制造数据 */
+    const size_t N = 100; //数据个数
+    cv::RNG rng(cv::getTickCount());
+    for( size_t i = 0; i < N; i ++)
+    {
+        /* 生产带有高斯噪声的数据　*/
+        double x = rng.uniform(0.0, 1.0) ;
+        double y = exp(aa*x*x + bb*x + cc) + rng.gaussian(0.05);
+        
+        /* 添加到观测中　*/
+        lm.addObservation(x, y);
+    }
+    /* 用LM法求解 */
+    lm.solve();
+    
+    return 0;
+}
+```
 ### 4、相机标定的步骤
 
 (1)、准备一个张正友标定法的棋盘格，棋盘格大小已知，用相机对其进行不同角度的拍摄，得到一组图像；
